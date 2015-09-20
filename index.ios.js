@@ -5,6 +5,7 @@
 'use strict';
 
 var gateway = require("./app/gateway");
+var query = require("./app/query");
 
 var React = require('react-native');
 var {
@@ -13,6 +14,8 @@ var {
   Text,
   View,
 } = React;
+
+var QueryResults = require("./app/QueryResults");
 
 
 var NexilesGatewayExample = React.createClass({
@@ -32,35 +35,16 @@ var NexilesGatewayExample = React.createClass({
       console.debug("version.version: ", version.version);
       me.setState({version: version});
     });
-    gateway.query("epmdocuments", {name: "*.asm"}).then(function (data) {
+    query.query({name: "01*.prt"}).then(function (data) {
       console.debug("results data: ", data);
       me.setState({results: data.items});
     });
   },
   render: function() {
-    var results = [];
-    for (let res of this.state.results) {
-      console.debug("res= %o", res);
-      results.push(
-        <Text key={res.oid}>
-          {res.name}
-        </Text>
-      )
-    }
-
+    console.debug("RENDER: ", this.state.results.length);
     return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.ios.js
-        </Text>
-        <Text style={styles.instructions}>
-          Gateway version {this.state.version.version} build {this.state.version.build} date {this.state.version.date}
-        </Text>
-        {results}
-      </View>
+      <QueryResults style={styles.container}
+                    items={this.state.results} />
     );
   }
 });
@@ -68,8 +52,6 @@ var NexilesGatewayExample = React.createClass({
 var styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: '#F5FCFF',
   },
   welcome: {

@@ -4,17 +4,22 @@ var agent = require('superagent-promise')(require('superagent'), Promise);
 
 var API_URL   = "http://wc002.dev.aws.nexiles.com/Windchill/servlet/nexiles/tools";
 
-var username = "nexiles";
-var password  = "nexiles";
+var username = "wcadmin";
+var password  = "wcadmin";
 
-function request(method, path) {
+function request(method, url) {
+	return agent(method, url)
+		.auth(username, password);
+}
+
+function api_request(method, path) {
 	var url = API_URL + "/" + path;
-	// console.debug("request: url=", url);
-	return agent(method, url).auth(username, password);
+	console.debug("api_request: %s url=", method, url);
+	return request(method, url);
 }
 
 function get(path, query) {
-	var req = request("GET", path);
+	var req = api_request("GET", path);
 	// console.debug("get: req=", req);
 
 	if (query) {
@@ -43,6 +48,7 @@ function query(what, query) {
 
 module.exports = {
 	request: request,
+	api_request: api_request,
 	get: get,
 	getJSON: getJSON,
 	version: version,
